@@ -4,8 +4,11 @@ metadata:
   name: deploy-ace-application
   title: Deploy an ACE Application
   description: Enable ACE Developers to easily deploy an ACE application
+  tags:
+    - recommended
+    - ace
 spec:
-  owner: admins
+  owner: apac-ce
   type: service
 
   parameters:

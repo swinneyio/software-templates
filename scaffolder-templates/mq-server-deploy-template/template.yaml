@@ -4,8 +4,11 @@ metadata:
   name: mq-deploy-template
   title: Deploy an MQ Server
   description: Deploy a configurable MQ Server for Development
+  tags:
+    - recommended
+    - mq
 spec:
-  owner: user:guest
+  owner: apac-ce
   type: service
   parameters:
     - title: Configure Your MQ Environment

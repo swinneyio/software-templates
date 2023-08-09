@@ -4,8 +4,12 @@ metadata:
   name: cluster-deploy
   title: Deploy a Managed OpenShift Cluster
   description: Deploy a managed OpenShift cluster using the IBM OTP pattern
+  tags:
+    - recommended
+    - rhacm
+    - openshift
 spec:
-  owner: admins
+  owner: apac-ce
   type: service
 
   parameters:
