@@ -1,0 +1,44 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: mq-deploy-template
+  title: Deploy an MQ Server
+  description: Deploy a configurable MQ Server for Development
+spec:
+  owner: user:guest
+  type: service
+  parameters:
+    - title: Configure Your MQ Environment
+      required:
+        - highAvailability
+      properties:
+        highAvailability:
+          title: High Availability
+          type: string
+          enum: ["true", "false"]
+          description: Would you like to deploy MQ in an HA configuration?
+    - title: MQ Storage Configuration
+      required:
+        - persistence
+      properties:
+        persistence:
+          title: Persistent Storage
+          type: string
+          enum: ["true", "false"]
+          description: Do you persistent storage for your MQ server?
+    - title: Choose a Target Cluster
+      required:
+        - clusterName
+      properties:
+        clusterName:
+          title: Target Cluster
+          type: string
+          enum: ["govtech", "local-cluster"]
+  steps:
+    - id: trigger_build
+      name: Trigger Build Pipeline
+      action: ibm:call-mq-build-pipeline
+      input:
+        clusterName:  ${{ parameters.clusterName }}
+        persistence: ${{ parameters.persistence }}
+        highAvailability: ${{ parameters.highAvailability }}
