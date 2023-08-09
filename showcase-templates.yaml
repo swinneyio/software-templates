@@ -17,3 +17,4 @@ spec:
     - https://github.com/swinneyio/software-templates/blob/main/scaffolder-templates/ansible-job-template/template.yaml
     - https://github.com/swinneyio/software-templates/blob/main/scaffolder-templates/mq-server-deploy-template/template.yaml
     - https://github.com/swinneyio/software-templates/blob/main/scaffolder-templates/managed-ocp-cluster-deploy-template/template.yaml
+    - https://github.com/swinneyio/software-templates/blob/main/scaffolder-templates/ace-application-deploy-template/template.yaml

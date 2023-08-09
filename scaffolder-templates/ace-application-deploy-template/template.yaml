@@ -1,0 +1,89 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: deploy-ace-application
+  title: Deploy an ACE Application
+  description: Enable ACE Developers to easily deploy an ACE application
+spec:
+  owner: admins
+  type: service
+
+  parameters:
+    - title: Git Repository
+      required:
+        - Repository
+      properties:
+        Repository:
+          title: Repository
+          type: string
+          description: Repository hosting the ACE applications
+    - title: Bar File
+      required:
+        - BarFile
+      properties:
+        BarFile:
+          title: BarFile
+          type: string
+          description: Name of Bar File
+    - title: Cluster Name
+      required:
+        - ClusterName
+      properties:
+        ClusterName:
+          title: ClusterName
+          type: string
+          enum: ["govtech", "local-cluster"]
+          description: Name of cluster to which this ACE application to.
+  steps:
+    - id: template
+      name: Generating the source code component
+      action: fetch:template
+      input:
+        url: ./skeleton
+        targetPath: argo/ansibleJobTemplates/
+        values:
+          clusterName: ${{ parameters.clusterName }}
+          clusterRegion: ${{ parameters.clusterRegion }}
+          targetCloud: ${{ parameters.targetCloud }}
+          ocpVersion: ${{ parameters.ocpVersion }}
+          multiZone: ${{ parameters.multiZone }}
+
+    - id: catalogTemplate
+      name: Generating the Catalog Info Component
+      action: fetch:template
+      input:
+        url: ../../scaffolder-skeletons/catalog-info-skeleton/
+        values:
+          # Gitops specific values
+          entityKind: Resource
+          githubOrg: ${{ parameters.githubOrg }}
+          repoName: ${{ parameters.repoName }}
+          owner: ${{ parameters.owner }}
+          applicationType: gitops
+          sourceControl: github.com
+          description: ${{ parameters.description }}    
+    
+    - id: publish
+      name: Publishing to Source Code Repository
+      action: publish:github
+      input:
+        description: This is ${{ parameters.component_id }}
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: main
+        protectDefaultBranch: false
+        repoVisibility: public
+
+    - id: register
+      name: Registering to the Catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+  output:
+    links:
+      - title: Source Code Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open the Catalog Info Component
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
