@@ -34,6 +34,7 @@ spec:
             - vsphere
             - baremetal
             - edge
+            - hypershift-kubevirt
           enumNames:
             - Amazon Web Service
             - Microsoft Azure
@@ -41,6 +42,7 @@ spec:
             - VMware vSphere
             - Bare-Metal
             - Edge
+            - HyperShift on OpenShift Virtualization
 
     - title: Choose a region
       required:
@@ -57,11 +59,13 @@ spec:
             - ap-southeast-2 # sydney
             - ap-southeast-3 # jakarta
             - ap-southeast-4 # melbourne
+            - local-cluster  # Hub Cluster
           enumNames:
             - Singapore
             - Sydney
             - Jakarta
             - Melbourne
+            - Hub Cluster
 
     - title: Choose the OpenShift version
       required:
@@ -93,16 +97,11 @@ spec:
         url: ./skeleton
         targetPath: argo/ansibleJobTemplates/
         values:
-          component_id: ${{ parameters.name }}
-          name: ${{ parameters.name }}
-          namespace: ${{ parameters.namespace }}
-          inventory: ${{ parameters.inventory }}
-          credential: ${{ parameters.credential }}
-          project: ${{ parameters.project }}
-          playbook: ${{ parameters.playbook }}
-          connection_secret: ${{ parameters.connection_secret }}
-          extra_vars: ${{ parameters.extra_vars }}
-          ask_vars_on_launch: ${{ parameters.ask_vars_on_launch }}
+          clusterName: ${{ parameters.clusterName }}
+          clusterRegion: ${{ parameters.clusterRegion }}
+          targetCloud: ${{ parameters.targetCloud }}
+          ocpVersion: ${{ parameters.ocpVersion }}
+          multiZone: ${{ parameters.multiZone }}
 
     - id: catalogTemplate
       name: Generating the Catalog Info Component
@@ -110,10 +109,13 @@ spec:
       input:
         url: ../../scaffolder-skeletons/catalog-info-skeleton/
         values:
+          # Gitops specific values
+          entityKind: Resource
           githubOrg: ${{ parameters.githubOrg }}
           repoName: ${{ parameters.repoName }}
           owner: ${{ parameters.owner }}
-          applicationType: api
+          applicationType: gitops
+          sourceControl: github.com
           description: ${{ parameters.description }}    
     
     - id: publish
